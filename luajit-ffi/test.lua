@@ -11,5 +11,5 @@ local fp = io.open(arg[1])
 local data = fp:read("*a")
 
 local vm = videometa.get_video_info(data,#data)
-print(vm[0].duration,vm[0].height,vm[0].width)
+print(vm.duration,vm.height,vm.width)
 

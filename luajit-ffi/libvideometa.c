@@ -8,6 +8,7 @@ struct buffer_data {
     uint8_t *ptr;
     size_t size; // size left in the buffer
 };
+
 typedef struct {
       int duration; 
       int width;
@@ -25,8 +26,9 @@ static int read_packet(void *opaque, uint8_t *buf, int buf_size)
     return buf_size;
 }
 
-void get_video_meta(uint8_t * file_buff,size_t file_len,video_meta* vm)
+void get_video_meta(uint8_t * file_buff,size_t file_len, video_meta* vm)
 {
+    //指针为空在外部判断
     vm->duration = -1;
     vm->width = -1;
     vm->height = -1;
@@ -36,8 +38,8 @@ void get_video_meta(uint8_t * file_buff,size_t file_len,video_meta* vm)
     AVIOContext *avio_ctx = NULL;
     uint8_t *avio_ctx_buffer = NULL;
     size_t avio_ctx_buffer_size = 524288;
-    struct buffer_data bd = {0};
 
+    struct buffer_data bd = {0};
     bd.ptr = file_buff;
     bd.size = file_len;
 
@@ -71,8 +73,8 @@ void get_video_meta(uint8_t * file_buff,size_t file_len,video_meta* vm)
         return;
     }
 
-    ret = avformat_find_stream_info(fmt_ctx, NULL);
-    if (ret < 0) {
+    int stream_index = av_find_best_stream(fmt_ctx,AVMEDIA_TYPE_VIDEO,-1,-1,NULL,0);
+    if(stream_index < 0){
         avformat_close_input(&fmt_ctx);
         av_freep(&avio_ctx->buffer); 
         av_freep(&avio_ctx);
@@ -84,17 +86,8 @@ void get_video_meta(uint8_t * file_buff,size_t file_len,video_meta* vm)
          int nsec = fmt_ctx->duration + (fmt_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
          vm->duration = nsec / 1000000;
     }
-    
-    int stream_index = av_find_best_stream(fmt_ctx,AVMEDIA_TYPE_VIDEO,-1,-1,NULL,0);
-    if(stream_index < 0){
-        avformat_close_input(&fmt_ctx);
-        av_freep(&avio_ctx->buffer); 
-        av_freep(&avio_ctx);
-        avformat_free_context(fmt_ctx);
-        return;
-    }
-    AVStream *st = fmt_ctx->streams[stream_index];
 
+    AVStream *st = fmt_ctx->streams[stream_index];
     vm->width = st->codecpar->width;
     vm->height = st->codecpar->height;
 
@@ -119,6 +112,7 @@ int main(int argc,char * argv[])
     video_meta vm;
     get_video_meta(read_buff,filelen,&vm);
     printf("Width:%d,Height:%d,Duration:%d\n",vm.width,vm.height,vm.duration);
+    free(read_buff);
 }
 */
 
