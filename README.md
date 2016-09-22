@@ -58,7 +58,7 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 * download the original image: http://127.0.0.1:7777/image1/M00/00/00/wKgB8VfiL6KEJ3ZMAAAAAOerjWk419.jpg
 * download the resize image: http://127.0.0.1:7777/image1/M00/00/00/wKgB8VfiL6KEJ3ZMAAAAAOerjWk419@200x200.jpg
 * download the video: http://127.0.0.1:7777/video1/M00/00/00/wKgB8VfiNpCECq8AAAAAANek-BI696.mp4
-* download the videosnapshot: http://127.0.0.1:7777/video1/M00/00/00/wKgB8VfiNpCECq8AAAAAANek-BI696.jpg
+* download the videosnapshot: http://127.0.0.1:7777/video1/M00/00/00/wKgB8VfiNpCECq8AAAAAANek-BI696.mp4.jpg
 ```
 
 ## Tips

@@ -41,8 +41,9 @@ local fdfs_ip   = ngx.var.fastdfs_tracker_ip
 local fdfs_port = ngx.var.fastdfs_tracker_port
 
 local cache_path = ngx.var.cache_path
-local filepath = ngx.var.local_path
+
 local filename = ngx.var.filename
+local filepath = cache_path .. filename
 local orgfilename = ngx.var.original_file
 local orgfilepath = cache_path .. orgfilename
 
@@ -51,14 +52,12 @@ local groupid = ngx.var.group_id:sub(2,-1)
 local media = ngx.var.media;
 local image_size = ngx.var.image_size
 
---[[
 ngx.log(ngx.ERR,"filename:",filename)
 ngx.log(ngx.ERR,"filepath:",filepath)
 ngx.log(ngx.ERR,"imagesize:",image_size)
 ngx.log(ngx.ERR,"groupid:",groupid)
 ngx.log(ngx.ERR,"originalfile:",orgfilename)
 ngx.log(ngx.ERR,"originalfilepath:",orgfilepath)
---]]
 
 if not is_file_exists(orgfilepath) then
 	local buffer,err = download_file(fdfs_ip,fdfs_port,groupid)
@@ -73,21 +72,21 @@ if not is_file_exists(orgfilepath) then
 	end
 	wfd:write(buffer)
 	wfd:close()
-	--ngx.log(ngx.ERR,"write ok")
+	ngx.log(ngx.ERR,"write ok")
 end
 
 if media == '1' then
 	if image_size ~= '' then
 		local cmd = "gm convert " .. orgfilepath .. " -thumbnail " .. image_size .. " " .. filepath
-		--ngx.log(ngx.ERR,"command : ",cmd)
+		ngx.log(ngx.ERR,"command : ",cmd)
 		local ret = os.execute(cmd)
 		if ret ~= 0 then
 			ngx.log(ngx.ERR,"os execute fail : ",cmd)
 		end
 	end
 elseif media == '2' then 
-	local cmd = "ffmpeg -ss 1 -i " .. orgfilepath .. " -f image2 -y " .. filepath
-	--ngx.log(ngx.ERR,"command : ",cmd)
+	local cmd = "ffmpeg -v 0 -ss 1 -i " .. orgfilepath .. " -vframes 1 -f image2 -y " .. filepath
+	ngx.log(ngx.ERR,"command : ",cmd)
 	local ret = os.execute(cmd)
 	if ret ~= 0 then
 		ngx.log(ngx.ERR,"os execute fail : ", cmd)
