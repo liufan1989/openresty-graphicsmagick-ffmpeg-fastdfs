@@ -1,7 +1,5 @@
-# openresty-imagemagick-ffmpeg-fastdfs
-Build the fastdfs file server via imagemagick and ffmpeg
-
-The file server can upload videos and pictures as well as download video shots and any size of the picture
+# openresty-graphicsmagick-ffmpeg-fastdfs
+Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file server can upload videos and pictures as well as download video shots and any size of the picture, At the same time can get the file meta informationsuch as file size, md5 ,image width and height, Duration of video, etc. 
 
 ## install fastdfs 
 * libfastcommon:  https://github.com/happyfish100/libfastcommon
@@ -11,40 +9,47 @@ The file server can upload videos and pictures as well as download video shots a
 ## install lua-resty-fastdfs
 * download from : https://github.com/azurewang/lua-resty-fastdfs 
 
-## install imagemagick
-* download from : http://www.imagemagick.org/script/index.php
+## install GraphicsMagick
+* download from : http://www.graphicsmagick.org/index.html
 * ./configure
 * make & make install
 
-## install imagemagick luajit ffi library
+## install magick [either-or]
+
+#### install imagemagick luajit ffi library
 * download from : https://github.com/leafo/magick
+* Reference : http://www.imagemagick.org/script/index.php
+
+#### install graphicsmagick luajit ffi library
+* download from : https://github.com/clementfarabet/graphicsmagick
+* Reference : http://www.graphicsmagick.org/index.html 
 
 ## install ffmpeg
 * download from : https://ffmpeg.org/download.html 
 * make dynamic library:  ./configure --enable-shared 
 * make & make install
-* ln -s /usr/local/lib/libxxxx.so /usr/lib/libxxxx.so
+* echo "/usr/local/lib" >> /etc/ld.so.conf  & ldconfig
 
 ## install you own library
 * ./build.sh
 * libvideometa.so : get video duration width and height by using the ffmpeg library
-* libvideometa.lua : using luajit the extended library ffi
+* libvideometa.lua : using luajit ffi library
 
 ## install openresty
 * Download the newest version:  http://openresty.org/cn/download.html
 * ./configure
 * make & make install
-* learning more about the nginx.conf rule : http://openresty.org/download/agentzh-nginx-tutorials-zhcn.html
+* Learning more about the nginx.conf rules : http://openresty.org/download/agentzh-nginx-tutorials-zhcn.html
 
 ``` 
-1. default openresty install path is /usr/local/openresty
-2. replace the nginx.conf file
-3. put download_server.lua upload_server.lua into /usr/local/openresty/site/
-4. put libvideometa.so libvideometa.lua into /usr/local/openresty/luajit/share/lua/5.x/
-5. put imagemagick luajit ffi library into /usr/local/openresty/luajit/share/lua/5.x/
-6. put lua-resty-fastdfs/*.lua  into /usr/local/openresty/lualib/resty/fastdfs/
+1. Default openresty install path is /usr/local/openresty
+2. Replace the nginx.conf file
+3. Put download_server.lua upload_server.lua into /usr/local/openresty/site/
+4. Put libvideometa.so libvideometa.lua into /usr/local/openresty/luajit/share/lua/5.x/
+5. Put imagemagick luajit ffi library into /usr/local/openresty/luajit/share/lua/5.x/
+6. Put lua-resty-fastdfs/*.lua  into /usr/local/openresty/lualib/resty/fastdfs/
 7. mkdir /srv/image_cache /srv/video_cache, by modified $cache_path in nginx.conf 
-8. start running openresty: ./bin/openresty
+8. Start running openresty: ./bin/openresty
 ```
 
 ## example
@@ -57,8 +62,9 @@ The file server can upload videos and pictures as well as download video shots a
 ```
 
 ## Tips
-* The upload file is http form-data submit, not suport http raw submit
+* Support only HTTP form data submission, not suport http raw submission
 * The $cache_path will generate a cache file, you need to clean up by the time stamp
 * Upload multiple files at one time
-
+* Comment out "lua_code_cache off;" in nginx.conf
+* Upload max file 50M ["client_max_body_size 50m" in nginx.conf, upload:new() in upload_server.lua]
 
