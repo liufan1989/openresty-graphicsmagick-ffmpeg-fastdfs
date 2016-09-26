@@ -2,6 +2,7 @@
 local cjson = require "cjson"
 local upload = require "resty.upload"
 local md5 = require "resty.md5"
+local string = require "resty.string"
 local tracker = require "resty.fastdfs.tracker"
 local storage = require "resty.fastdfs.storage"
 local magick = require "magick"
@@ -100,6 +101,7 @@ while true do
 
 	elseif stream == "part_end" then
 		local md5_num = md5c:final()
+		local md5_hex = string.to_hex(md5_num)
 		local filemeta = nil
 
 		--------Meta Info---------
@@ -112,7 +114,7 @@ while true do
 				ngx.log(ngx.ERR,'load image from buffer error')
 				ngx.exit(500)
 			end
-			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_num,width=img:get_width(),height=img:get_height()})
+			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_hex,width=img:get_width(),height=img:get_height()})
 
                 elseif filetype == "video" then
 			fdfs_ip = ngx.var.fastdfs_video_tracker_ip
@@ -123,7 +125,7 @@ while true do
 				ngx.log(ngx.ERR,'get video info eror')
 				ngx.exit(500)
  			end
-			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_num,width=vm.width,height=vm.height,duration=vm.duration})
+			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_hex,width=vm.width,height=vm.height,duration=vm.duration})
                 else
 
 			ngx.log(ngx.ERR,'upload file type is error!')
