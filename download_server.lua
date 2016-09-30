@@ -58,18 +58,21 @@ local orgfilepath = cache_path .. orgfilename
 local groupid = ngx.var.group_id:sub(2,-1)
 local media = ngx.var.media;
 local image_size = ngx.var.image_size
+local postfix = ngx.var.postfix
 
---[[
+ngx.log(ngx.ERR,"uri:",ngx.var.uri)
+ngx.log(ngx.ERR,"postfix:",postfix)
 ngx.log(ngx.ERR,"filename:",filename)
 ngx.log(ngx.ERR,"filepath:",filepath)
 ngx.log(ngx.ERR,"imagesize:",image_size)
 ngx.log(ngx.ERR,"groupid:",groupid)
 ngx.log(ngx.ERR,"originalfile:",orgfilename)
 ngx.log(ngx.ERR,"originalfilepath:",orgfilepath)
---]]
 
+
+local buffer = nil
 if not is_file_exists(orgfilepath) then
-	local buffer = download_file(fdfs_ip,fdfs_port,groupid)
+	buffer = download_file(fdfs_ip,fdfs_port,groupid)
 	if not buffer then
 	    ngx.log(ngx.ERR,"download from fastdfs storage error:", err)
 	    ngx.exit(500)
@@ -91,7 +94,14 @@ if media == '1' then
 		local ret = os.execute(cmd)
 		if ret ~= 0 then
 			ngx.log(ngx.ERR,"os execute error : ",cmd)
+	                ngx.exit(500)
 		end
+		local rfd = io.open(filepath,"r")
+		if not rfd then
+		    ngx.log(ngx.ERR,"read file error:", filepath)
+		    ngx.exit(500)
+		end
+		buffer = rfd:read("*a")
 	end
 elseif media == '2' then 
 	local cmd = "ffmpeg -v 0 -ss 1 -i " .. orgfilepath .. " -vframes 1 -f image2 -y " .. filepath
@@ -99,9 +109,21 @@ elseif media == '2' then
 	local ret = os.execute(cmd)
 	if ret ~= 0 then
 		ngx.log(ngx.ERR,"os execute error : ", cmd)
+		ngx.exit(500)
 	end
+	local rfd = io.open(filepath,"r")
+	if not rfd then
+	    ngx.log(ngx.ERR,"read file error:", filepath)
+	    ngx.exit(500)
+	end
+	buffer = rfd:read("*a")
+
+elseif media == '3' then
+	--download audio amr file	
 else
-	ngx.log(ngx.ERR,'media type error!')
+	ngx.log(ngx.ERR,'media type error : ', media)
 	ngx.exit(500)
 end
 
+ngx.print(buffer)
+buffer = nil

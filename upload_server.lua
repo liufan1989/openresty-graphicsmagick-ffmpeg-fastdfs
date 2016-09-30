@@ -6,9 +6,10 @@ local string = require "resty.string"
 local tracker = require "resty.fastdfs.tracker"
 local storage = require "resty.fastdfs.storage"
 local magick = require "magick"
-local videometa = require "libvideometa"
+--local videometa = require "libvideometa"
+local avmeta = require "libavmeta"
 
----------Function----------
+--------------------------Function--------------------------------
 function get_filename(res) 
 	local filename = ngx.re.match(res,'(.+)filename="(.+)"(.*)') 
 	if filename then  
@@ -61,7 +62,7 @@ function upload_file(fdfs_ip,fdfs_port,buffer,postfix,metainfo)
 	return groupid 
 end
 
-------------------MAIN---------------------------------
+------------------------------------MAIN---------------------------------
 
 local chunk_size = 52428800 --50M
 local form,err = upload:new(chunk_size)
@@ -106,7 +107,7 @@ while true do
 		local md5_hex = string.to_hex(md5_num)
 		local filemeta = nil
 		--------Meta Info---------
-		if filetype == "image" then
+		if     filetype == "image" then
 			fdfs_ip = ngx.var.fastdfs_image_tracker_ip
 			fdfs_port = ngx.var.fastdfs_image_tracker_port
 
@@ -116,19 +117,31 @@ while true do
 				ngx.exit(500)
 			end
 			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_hex,width=img:get_width(),height=img:get_height()})
+
                 elseif filetype == "video" then
 			fdfs_ip = ngx.var.fastdfs_video_tracker_ip
 			fdfs_port = ngx.var.fastdfs_video_tracker_port
 
-			local vm = videometa.get_video_info(buffer,filesize)
+			local vm = avmeta.get_video_info(buffer,filesize)
 			if not vm then
 				ngx.log(ngx.ERR,'get video info eror')
 				ngx.exit(500)
  			end
 			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_hex,width=vm.width,height=vm.height,duration=vm.duration})
-                else
 
-			ngx.log(ngx.ERR,'upload file type is error')
+                elseif filetype == "audio" then
+			fdfs_ip = ngx.var.fastdfs_video_tracker_ip
+			fdfs_port = ngx.var.fastdfs_video_tracker_port
+
+			local am = avmeta.get_audio_info(buffer,filesize)
+			if not am then
+				ngx.log(ngx.ERR,'get audio info eror')
+				ngx.exit(500)
+ 			end
+			filemeta = cjson.encode({size=filesize,ext=postfix,md5=md5_hex,bitrate=am.bitrate,duration=am.duration})
+
+		else
+			ngx.log(ngx.ERR,'upload file type is error : ', filetype)
 			ngx.exit(500)
                 end
 		local groupid = upload_file(fdfs_ip,fdfs_port,buffer,postfix,filemeta)

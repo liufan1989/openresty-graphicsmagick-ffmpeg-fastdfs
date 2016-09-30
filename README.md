@@ -1,5 +1,5 @@
 # openresty-graphicsmagick-ffmpeg-fastdfs
-Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file server can upload videos and pictures as well as download video shots and any size of the picture, At the same time can get the file meta informationsuch as file size, md5 ,image width and height, Duration of video, etc. 
+Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file server can upload videos and pictures as well as download video shots and any size of the picture, At the same time can get the file meta information such as file size, md5 ,image width and height, duration of video, duration of audio etc. 
 
 ## install fastdfs 
 * libfastcommon:  https://github.com/happyfish100/libfastcommon
@@ -32,8 +32,8 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 
 ## install you own library
 * ./build.sh
-* libvideometa.so : get video duration width and height by using the ffmpeg library
-* libvideometa.lua : using luajit ffi library
+* libvideometa.so,libavmeta.so : get video duration width and height by using the ffmpeg library
+* libvideometa.lua,libavmeta.lua : using luajit ffi library
 
 ## install openresty
 * Download the newest version:  http://openresty.org/cn/download.html
@@ -45,7 +45,7 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 1. Default openresty install path is /usr/local/openresty
 2. Replace the nginx.conf file
 3. Put download_server.lua upload_server.lua into /usr/local/openresty/site/
-4. Put libvideometa.so libvideometa.lua into /usr/local/openresty/luajit/share/lua/5.x/
+4. Put libavmeta.so libavmeta.lua into /usr/local/openresty/luajit/share/lua/5.x/
 5. Put imagemagick luajit ffi library into /usr/local/openresty/luajit/share/lua/5.x/
 6. Put lua-resty-fastdfs/*.lua  into /usr/local/openresty/lualib/resty/fastdfs/
 7. mkdir /srv/image_cache /srv/video_cache, by modified $cache_path in nginx.conf 
@@ -67,4 +67,5 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 * Upload multiple files at one time
 * Comment out "lua_code_cache off;" in nginx.conf
 * Upload max file 50M ["client_max_body_size 50m" in nginx.conf, upload:new() in upload_server.lua]
+* When uploaded file the content-type of form is correct
 
