@@ -102,6 +102,7 @@ if media == '1' then
 		    ngx.exit(500)
 		end
 		buffer = rfd:read("*a")
+		rfd:close()
 	end
 elseif media == '2' then 
 	local cmd = "ffmpeg -v 0 -ss 1 -i " .. orgfilepath .. " -vframes 1 -f image2 -y " .. filepath
@@ -117,6 +118,7 @@ elseif media == '2' then
 	    ngx.exit(500)
 	end
 	buffer = rfd:read("*a")
+	rfd:close()
 
 elseif media == '3' then
 	--download audio amr file	
