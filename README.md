@@ -1,41 +1,42 @@
 # openresty-graphicsmagick-ffmpeg-fastdfs
 Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file server can upload videos and pictures as well as download video shots and any size of the picture, At the same time can get the file meta information such as file size, md5 ,image width and height, duration of video, duration of audio etc. 
 
-## install fastdfs 
+## Install fastdfs 
 * libfastcommon:  https://github.com/happyfish100/libfastcommon
 * fastdfs:   https://github.com/happyfish100/fastdfs
 * fastdht:   https://github.com/happyfish100/fastdht
 
-## install lua-resty-fastdfs
+## Install lua-resty-fastdfs
 * download from : https://github.com/azurewang/lua-resty-fastdfs 
 
-## install GraphicsMagick
+## Install GraphicsMagick
 * download from : http://www.graphicsmagick.org/index.html
 * ./configure
 * make & make install
+* unbuntu: apt-get install graphicsmagick [either-or]
 
-## install magick [either-or]
+## Install magick lua ffi library [either-or]
 
-#### install imagemagick luajit ffi library
+#### Install ImageMagick luajit ffi library
 * download from : https://github.com/leafo/magick
 * Reference : http://www.imagemagick.org/script/index.php
 
-#### install graphicsmagick luajit ffi library
+#### Install GraphicsMagick luajit ffi library
 * download from : https://github.com/clementfarabet/graphicsmagick
 * Reference : http://www.graphicsmagick.org/index.html 
 
-## install ffmpeg
+## Install ffmpeg library
 * download from : https://ffmpeg.org/download.html 
 * make dynamic library:  ./configure --enable-shared 
 * make & make install
-* echo "/usr/local/lib" >> /etc/ld.so.conf  & ldconfig
+* echo "/usr/local/lib" >> /etc/ld.so.conf & ldconfig
 
-## install you own library
+## Install you own library
 * ./build.sh
-* libvideometa.so,libavmeta.so : get video duration width and height by using the ffmpeg library
-* libvideometa.lua,libavmeta.lua : using luajit ffi library
+* libavmeta.so : get video and audio files information by using the ffmpeg library
+* libavmeta.lua : using luajit ffi library
 
-## install openresty
+## Install openresty
 * Download the newest version:  http://openresty.org/cn/download.html
 * ./configure
 * make & make install
@@ -45,14 +46,14 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 1. Default openresty install path is /usr/local/openresty
 2. Replace the nginx.conf file
 3. Put download_server.lua upload_server.lua into /usr/local/openresty/site/
-4. Put libavmeta.so libavmeta.lua into /usr/local/openresty/luajit/share/lua/5.x/
-5. Put imagemagick luajit ffi library into /usr/local/openresty/luajit/share/lua/5.x/
+4. Put libavmeta.so libavmeta.lua into /usr/local/openresty/lualib/
+5. Put magick luajit ffi library into /usr/local/openresty/lualib/
 6. Put lua-resty-fastdfs/*.lua  into /usr/local/openresty/lualib/resty/fastdfs/
 7. mkdir /srv/image_cache /srv/video_cache, by modified $cache_path in nginx.conf 
 8. Start running openresty: ./bin/openresty
 ```
 
-## example
+## Example
 ```
 * upload file: http://127.0.0.1:7777/share/upload/  [http-form-data]
 * download the original image: http://127.0.0.1:7777/image1/M00/00/00/wKgB8VfiL6KEJ3ZMAAAAAOerjWk419.jpg
@@ -67,5 +68,5 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 * Upload multiple files at one time
 * Comment out "lua_code_cache off;" in nginx.conf
 * Upload max file 50M ["client_max_body_size 50m" in nginx.conf, upload:new() in upload_server.lua]
-* When uploaded file the content-type of form is correct
+* When uploading files  make sure the content-type of form correct
 
