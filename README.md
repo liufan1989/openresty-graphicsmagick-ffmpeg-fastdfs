@@ -5,6 +5,7 @@ Build the fastdfs file server with graphicsmagick and ffmpeg tools, The file ser
 * libfastcommon:  https://github.com/happyfish100/libfastcommon
 * fastdfs:   https://github.com/happyfish100/fastdfs
 * fastdht:   https://github.com/happyfish100/fastdht
+* configure storage group name: image[0-9] and vide[0-9]
 
 ## Install lua-resty-fastdfs
 * download from : https://github.com/azurewang/lua-resty-fastdfs 
